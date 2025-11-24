@@ -4,6 +4,7 @@
 import vim
 import os
 import sys
+import time
 import os.path
 import fnmatch
 from .utils import *
@@ -19,6 +20,7 @@ class Mru(object):
                                        'python' + lfEval("g:Lf_PythonVersion"),
                                        'mru')
         self._cache_file = os.path.join(self._cache_dir, 'frecency')
+        self._priority_cache_file = os.path.join(self._cache_dir, 'priority')
         self._old_cache_file = os.path.join(self._cache_dir, 'mruCache')
         self._initCache()
         self._mru_bufnrs = { b.number: 0 for b in vim.buffers }
@@ -29,6 +31,9 @@ class Mru(object):
             os.makedirs(self._cache_dir)
         if not os.path.exists(self._cache_file):
             with lfOpen(self._cache_file, 'w', errors='ignore'):
+                pass
+        if not os.path.exists(self._priority_cache_file):
+            with lfOpen(self._priority_cache_file, 'w', errors='ignore'):
                 pass
 
     def getCacheFileName(self):
@@ -101,6 +106,22 @@ class Mru(object):
 
     def delMruBufnr(self, buf_number):
         del self._mru_bufnrs[buf_number]
+
+    def updatePriority(self, filename):
+        priority_map = self.getPriorityMap()
+        priority_map[filename] = int(time.time())
+        with lfOpen(self._priority_cache_file, 'w', errors='ignore', encoding='utf-8') as f:
+            for name, timestamp in priority_map.items():
+                f.write("{} {}\n".format(name, timestamp))
+
+    def getPriorityMap(self):
+        priority_map = {}
+        with lfOpen(self._priority_cache_file, 'r', errors='ignore', encoding='utf-8') as f:
+            for line in f:
+                parts = line.rsplit(' ', 1)
+                if len(parts) == 2:
+                    priority_map[parts[0]] = int(parts[1])
+        return priority_map
 
 #*****************************************************
 # mru is a singleton

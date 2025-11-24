@@ -514,8 +514,8 @@ class Manager(object):
             lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % winid)
             lfCmd("call nvim_win_set_option(%d, 'winhighlight', 'Normal:Lf_hl_popup_window')" % winid)
         else:
-            # lfCmd("call win_execute(%d, 'setlocal number norelativenumber cursorline')" % winid)
-            lfCmd("call win_execute(%d, 'setlocal nofoldenable foldmethod=manual')" % winid)
+            lfCmd("noautocmd call win_execute(%d, 'setlocal number norelativenumber cursorline')" % winid)
+            lfCmd("noautocmd call win_execute(%d, 'setlocal nofoldenable foldmethod=manual')" % winid)
             if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0' or lfEval("get(g:, 'Lf_PopupShowBorder', 1)") == '1':
                 lfCmd("call win_execute(%d, 'setlocal foldcolumn=0')" % winid)
             else:
@@ -1696,6 +1696,20 @@ class Manager(object):
             self._previous_result = result
         else:
             result = list(filter_method(cur_content))
+            if self._cli.isFuzzy and self._getExplorer().getStlCategory() == 'Mru':
+                from .mru import mru
+                priority_map = mru.getPriorityMap()
+                new_result = []
+                for weight, line in result:
+                    digest = self._getDigest(line, 0)
+                    if os.name == 'nt':
+                        digest = digest.replace('\\', '/')
+                    prio = priority_map.get(digest, 0)
+                    if prio > 0:
+                         weight += 10000
+                    new_result.append((weight, line))
+                result = new_result
+
             if is_continue:
                 self._previous_result += result
                 result = self._previous_result
@@ -1829,7 +1843,7 @@ class Manager(object):
             filter_method = self._andModeFilter
         elif self._cli.isRefinement:
             if self._cli.pattern[1] == '':      # e.g. abc;
-                if self._fuzzy_engine and isAscii(self._cli.pattern[0]):
+                if self._getExplorer().getStlCategory() != 'Mru' and self._fuzzy_engine and isAscii(self._cli.pattern[0]):
                     use_fuzzy_engine = True
                     return_index = True
                     pattern = fuzzyEngine.initPattern(self._cli.pattern[0])
@@ -1838,7 +1852,7 @@ class Manager(object):
                     getHighlights = partial(fuzzyEngine.getHighlights, engine=self._fuzzy_engine,
                                             pattern=pattern, is_name_only=True)
                     highlight_method = partial(self._highlight, False, getHighlights, True)
-                elif is_fuzzyMatch_C and isAscii(self._cli.pattern[0]):
+                elif self._getExplorer().getStlCategory() != 'Mru' and is_fuzzyMatch_C and isAscii(self._cli.pattern[0]):
                     use_fuzzy_match_c = True
                     pattern = fuzzyMatchC.initPattern(self._cli.pattern[0])
                     getWeight = partial(fuzzyMatchC.getWeight, pattern=pattern, is_name_only=True)
@@ -1855,7 +1869,7 @@ class Manager(object):
                     filter_method = partial(self._fuzzyFilter, False, getWeight)
                     highlight_method = partial(self._highlight, False, getHighlights)
             elif self._cli.pattern[0] == '':    # e.g. ;abc
-                if self._fuzzy_engine and isAscii(self._cli.pattern[1]):
+                if self._getExplorer().getStlCategory() != 'Mru' and self._fuzzy_engine and isAscii(self._cli.pattern[1]):
                     use_fuzzy_engine = True
                     return_index = True
                     pattern = fuzzyEngine.initPattern(self._cli.pattern[1])
@@ -1864,7 +1878,7 @@ class Manager(object):
                     getHighlights = partial(fuzzyEngine.getHighlights, engine=self._fuzzy_engine,
                                             pattern=pattern, is_name_only=False)
                     highlight_method = partial(self._highlight, True, getHighlights, True)
-                elif is_fuzzyMatch_C and isAscii(self._cli.pattern[1]):
+                elif self._getExplorer().getStlCategory() != 'Mru' and is_fuzzyMatch_C and isAscii(self._cli.pattern[1]):
                     use_fuzzy_match_c = True
                     pattern = fuzzyMatchC.initPattern(self._cli.pattern[1])
                     getWeight = partial(fuzzyMatchC.getWeight, pattern=pattern, is_name_only=False)
@@ -1881,7 +1895,7 @@ class Manager(object):
                     filter_method = partial(self._fuzzyFilter, True, getWeight)
                     highlight_method = partial(self._highlight, True, getHighlights)
             else:   # e.g. abc;def
-                if is_fuzzyMatch_C and isAscii(self._cli.pattern[0]):
+                if self._getExplorer().getStlCategory() != 'Mru' and is_fuzzyMatch_C and isAscii(self._cli.pattern[0]):
                     is_ascii_0 = True
                     pattern_0 = fuzzyMatchC.initPattern(self._cli.pattern[0])
                     getWeight_0 = partial(fuzzyMatchC.getWeight, pattern=pattern_0, is_name_only=True)
@@ -1895,7 +1909,7 @@ class Manager(object):
                         getWeight_0 = fuzzy_match_0.getWeight
                     getHighlights_0 = fuzzy_match_0.getHighlights
 
-                if is_fuzzyMatch_C and isAscii(self._cli.pattern[1]):
+                if self._getExplorer().getStlCategory() != 'Mru' and is_fuzzyMatch_C and isAscii(self._cli.pattern[1]):
                     is_ascii_1 = True
                     pattern_1 = fuzzyMatchC.initPattern(self._cli.pattern[1])
                     getWeight_1 = partial(fuzzyMatchC.getWeight, pattern=pattern_1, is_name_only=False)

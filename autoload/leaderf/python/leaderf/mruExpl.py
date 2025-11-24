@@ -50,6 +50,13 @@ class MruExplorer(Explorer):
         return frecency
 
     def getContent(self, *args, **kwargs):
+        # Update priority for the current buffer before displaying the list
+        current_buffer = vim.current.buffer.name
+        if current_buffer and os.path.exists(current_buffer):
+            if os.name == 'nt':
+                current_buffer = current_buffer.replace('\\', '/')
+            mru.updatePriority(current_buffer)
+
         mru.saveToCache(lfEval("readfile(lfMru#CacheFileName())"))
         lfCmd("call writefile([], lfMru#CacheFileName())")
 
@@ -73,10 +80,18 @@ class MruExplorer(Explorer):
                     pass
 
             arguments_dict = kwargs.get("arguments", {})
+            priority_map = mru.getPriorityMap()
+
             if "--frecency" in arguments_dict or lfEval("get(g:, 'Lf_MruEnableFrecency', 0)") == '1':
-                data_list.sort(key=partial(self.getFrecency, time.time()), reverse=True)
+                if os.name == 'nt':
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/'), 0), self.getFrecency(time.time(), item)), reverse=True)
+                else:
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip(), 0), self.getFrecency(time.time(), item)), reverse=True)
             else:
-                data_list.sort(key=operator.itemgetter(0), reverse=True)
+                if os.name == 'nt':
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/'), 0), int(item[0])), reverse=True)
+                else:
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip(), 0), int(item[0])), reverse=True)
 
             max_files = int(lfEval("g:Lf_MruMaxFiles"))
             if len(data_list) > max_files:
@@ -127,6 +142,7 @@ class MruExplorer(Explorer):
         self._max_bufname_len = max(int(lfEval("strdisplaywidth('%s')"
                                         % escQuote(getBasename(line))))
                                     for line in lines)
+        self._max_bufname_len = min(25, self._max_bufname_len)
         for i, line in enumerate(lines):
             if lfEval("g:Lf_ShowRelativePath") == '1' and show_absolute == False:
                 line = lfRelpath(line)
@@ -203,6 +219,11 @@ class MruExplManager(Manager):
             if not os.path.isabs(file):
                 file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
                 file = os.path.normpath(lfEncode(file))
+
+            if os.name == 'nt':
+                file = file.replace('\\', '/')
+
+            mru.updatePriority(file)
 
             if kwargs.get("mode", '') == 't':
                 if (lfEval("get(g:, 'Lf_DiscardEmptyBuffer', 1)") == '1' and vim.current.buffer.name == ''
@@ -388,7 +409,7 @@ class MruExplManager(Manager):
         else:
             source = file
 
-        jump_cmd = 'normal! g`"'
+        jump_cmd = 'silent! normal! g`"'
         self._createPopupPreview(file, source, 0, jump_cmd)
 
 
