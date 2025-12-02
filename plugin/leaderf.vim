@@ -120,10 +120,12 @@ function! s:Normalize(filename)
 endfunction
 
 if get(g:, 'Lf_MruEnable', 1) == 1
-    augroup LeaderF_Mru
-        autocmd BufEnter,BufWritePost * call lfMru#record(s:Normalize(expand('<afile>:p'))) |
-                    \ call lfMru#recordBuffer(expand('<abuf>'))
-    augroup END
+  augroup LeaderF_Mru
+    autocmd!
+    autocmd BufEnter,BufWritePost * call lfMru#record(s:Normalize(expand('<afile>:p'))) |
+                \ call lfMru#recordBuffer(expand('<abuf>')) |
+                \ call lfMru#updatePriority(s:Normalize(expand('<afile>:p')))
+  augroup END
 endif
 
 augroup LeaderF_Gtags

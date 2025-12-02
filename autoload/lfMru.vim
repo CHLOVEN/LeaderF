@@ -54,5 +54,42 @@ function! lfMru#record(name)
 endfunction
 
 function! lfMru#recordBuffer(bufNum)
-    call add(g:Lf_MruBufnrs, a:bufNum)
+  call add(g:Lf_MruBufnrs, a:bufNum)
+endfunction
+
+function! lfMru#updatePriority(name)
+  if a:name == '' || !filereadable(a:name) || strpart(a:name, 0, 2) == '\\'
+    return
+  endif
+
+  let l:priority_cache = g:Lf_CacheDirectory . '/LeaderF/python' . (has('python3') ? '3' : '2') . '/mru/priority'
+  let l:priority_dir = fnamemodify(l:priority_cache, ':h')
+
+  if !isdirectory(l:priority_dir)
+    call mkdir(l:priority_dir, 'p')
+  endif
+
+  let l:file_path = a:name
+  if has('win32') || has('win64')
+    let l:file_path = substitute(l:file_path, '\\', '/', 'g')
+  endif
+
+  let l:priority_map = {}
+  if filereadable(l:priority_cache)
+    for line in readfile(l:priority_cache)
+      let parts = split(line, ' ')
+      if len(parts) >= 2
+        let l:priority_map[parts[0]] = parts[1]
+      endif
+    endfor
+  endif
+
+  let l:priority_map[l:file_path] = localtime()
+
+  let l:lines = []
+  for [path, timestamp] in items(l:priority_map)
+    call add(l:lines, path . ' ' . timestamp)
+  endfor
+
+  call writefile(l:lines, l:priority_cache)
 endfunction
