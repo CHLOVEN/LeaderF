@@ -80,6 +80,8 @@ let g:Lf_Arguments = {
             \               {"name": ["--file"], "nargs": "+", "help": "read file list from the specified file."},
             \           ],
             \           {"name": ["--no-ignore"], "nargs": 0, "help": "don't respect ignore files (.gitignore, .ignore, etc.)."},
+            \           {"name": ["--next-action"], "nargs": 1, "help": "Action to perform after selection (create, delete, move)."},
+            \           {"name": ["--type"], "nargs": 1, "help": "Specify the type of files to search (e.g., f for file, d for directory)."},
             \   ],
             \ "buffer":[
             \           {"name": ["--all"], "nargs": 0, "help": "search all buffers in addition to the listed buffers"},

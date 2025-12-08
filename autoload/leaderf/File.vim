@@ -30,6 +30,9 @@ function! leaderf#File#Maps()
     nnoremap <buffer> <silent> s             :exec g:Lf_py "fileExplManager.addSelections()"<CR>
     nnoremap <buffer> <silent> a             :exec g:Lf_py "fileExplManager.selectAll()"<CR>
     nnoremap <buffer> <silent> c             :exec g:Lf_py "fileExplManager.clearSelections()"<CR>
+    nnoremap <buffer> <silent> M             :exec g:Lf_py "fileExplManager.createFile()"<CR>
+    nnoremap <buffer> <silent> D             :exec g:Lf_py "fileExplManager.deleteFile()"<CR>
+    nnoremap <buffer> <silent> R             :exec g:Lf_py "fileExplManager.moveFile()"<CR>
     nnoremap <buffer> <silent> p             :exec g:Lf_py "fileExplManager._previewResult(True)"<CR>
     nnoremap <buffer> <silent> j             :<C-U>exec g:Lf_py "fileExplManager.moveAndPreview('j')"<CR>
     nnoremap <buffer> <silent> k             :<C-U>exec g:Lf_py "fileExplManager.moveAndPreview('k')"<CR>

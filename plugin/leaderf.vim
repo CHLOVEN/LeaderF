@@ -201,8 +201,15 @@ vnoremap <silent> <Plug>LeaderfGtagsGrep :<C-U><C-R>=leaderf#Gtags#startCmdline(
 
 command! -bar -nargs=* -complete=dir LeaderfFile Leaderf file <args>
 command! -bar -nargs=* -complete=dir LeaderfFileFullScreen Leaderf file --fullScreen <args>
+command! -bar -nargs=* -complete=dir LeaderfFileCreate Leaderf file --type dir --next-action create <args>
+command! -bar -nargs=* -complete=dir LeaderfFileDirectoryDelete Leaderf file --type both --next-action delete <args>
+command! -bar -nargs=* -complete=dir LeaderfFileMove Leaderf file --next-action move <args>
 command! -bar -nargs=1 LeaderfFilePattern Leaderf file --input <args>
 command! -bar -nargs=0 LeaderfFileCword Leaderf file --cword
+
+nnoremap <silent> \fc :LeaderfFileCreate<CR>
+nnoremap <silent> \fx :LeaderfFileDirectoryDelete<CR>
+nnoremap <silent> \fz :LeaderfFileMove<CR>
 
 command! -bar -nargs=0 LeaderfBuffer Leaderf buffer
 command! -bar -nargs=0 LeaderfBufferAll Leaderf buffer --all

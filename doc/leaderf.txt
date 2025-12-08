@@ -462,7 +462,10 @@ g:Lf_NormalMap                                  *g:Lf_NormalMap*
         \            ["<C-k>", "k"]
         \           ],
         \ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>'],
-        \            ["<F6>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']
+        \            ["<F6>", ':exec g:Lf_py "fileExplManager.quit()"<CR>'],
+        \            ["M", ':exec g:Lf_py "fileExplManager.createFile()"<CR>'],
+        \            ["D", ':exec g:Lf_py "fileExplManager.deleteFile()"<CR>'],
+        \            ["R", ':exec g:Lf_py "fileExplManager.moveFile()"<CR>']
         \           ],
         \ "Buffer": [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>'],
         \            ["<F6>", ':exec g:Lf_py "bufExplManager.quit()"<CR>']
@@ -538,6 +541,9 @@ g:Lf_NormalCommandMap                                  *g:Lf_NormalCommandMap*
         \               "q":     "<Esc>",
         \               "a":     "<C-A>",
         \               "<Esc>": "<C-W>",
+        \               "M":     "M",
+        \               "D":     "D",
+        \               "R":     "R"
         \           },
         \ "Buffer": {},
         \ "Mru":    {},

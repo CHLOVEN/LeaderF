@@ -84,12 +84,12 @@ class MruExplorer(Explorer):
 
             if "--frecency" in arguments_dict or lfEval("get(g:, 'Lf_MruEnableFrecency', 0)") == '1':
                 if os.name == 'nt':
-                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/'), 0), self.getFrecency(time.time(), item)), reverse=True)
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/').lower(), 0), self.getFrecency(time.time(), item)), reverse=True)
                 else:
                     data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip(), 0), self.getFrecency(time.time(), item)), reverse=True)
             else:
                 if os.name == 'nt':
-                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/'), 0), int(item[0])), reverse=True)
+                    data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip().replace('\\', '/').lower(), 0), int(item[0])), reverse=True)
                 else:
                     data_list.sort(key=lambda item: (priority_map.get(item[2].rstrip(), 0), int(item[0])), reverse=True)
 

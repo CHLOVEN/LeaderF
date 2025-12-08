@@ -109,6 +109,8 @@ class Mru(object):
 
     def updatePriority(self, filename):
         priority_map = self.getPriorityMap()
+        if sys.platform[:3] == 'win' or sys.platform in ('cygwin', 'msys'):
+            filename = filename.lower().replace('\\', '/')
         priority_map[filename] = int(time.time())
         with lfOpen(self._priority_cache_file, 'w', errors='ignore', encoding='utf-8') as f:
             for name, timestamp in priority_map.items():
@@ -120,7 +122,10 @@ class Mru(object):
             for line in f:
                 parts = line.rsplit(' ', 1)
                 if len(parts) == 2:
-                    priority_map[parts[0]] = int(parts[1])
+                    if sys.platform[:3] == 'win' or sys.platform in ('cygwin', 'msys'):
+                        priority_map[parts[0].lower().replace('\\', '/')] = int(parts[1])
+                    else:
+                        priority_map[parts[0]] = int(parts[1])
         return priority_map
 
 #*****************************************************
