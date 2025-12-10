@@ -107,25 +107,34 @@ class Mru(object):
     def delMruBufnr(self, buf_number):
         del self._mru_bufnrs[buf_number]
 
-    def updatePriority(self, filename):
-        priority_map = self.getPriorityMap()
-        if sys.platform[:3] == 'win' or sys.platform in ('cygwin', 'msys'):
-            filename = filename.lower().replace('\\', '/')
-        priority_map[filename] = int(time.time())
-        with lfOpen(self._priority_cache_file, 'w', errors='ignore', encoding='utf-8') as f:
-            for name, timestamp in priority_map.items():
-                f.write("{} {}\n".format(name, timestamp))
+    def normalizeForPriority(self, filename):
+        if os.name == 'nt' or sys.platform[:3] == 'win' or sys.platform in ('cygwin', 'msys') or (len(filename) > 1 and filename[1] == ':'):
+            return filename.lower().replace('\\', '/')
+        return filename
 
-    def getPriorityMap(self):
+    def _readPriorityFile(self):
         priority_map = {}
         with lfOpen(self._priority_cache_file, 'r', errors='ignore', encoding='utf-8') as f:
             for line in f:
                 parts = line.rsplit(' ', 1)
                 if len(parts) == 2:
-                    if sys.platform[:3] == 'win' or sys.platform in ('cygwin', 'msys'):
-                        priority_map[parts[0].lower().replace('\\', '/')] = int(parts[1])
-                    else:
-                        priority_map[parts[0]] = int(parts[1])
+                    normalized_key = self.normalizeForPriority(parts[0])
+                    priority_map[normalized_key] = (parts[0], int(parts[1]))
+        return priority_map
+
+    def updatePriority(self, filename):
+        priority_map = self._readPriorityFile()
+        normalized_key = self.normalizeForPriority(filename)
+        priority_map[normalized_key] = (filename, int(time.time()))
+        with lfOpen(self._priority_cache_file, 'w', errors='ignore', encoding='utf-8') as f:
+            for _, (name, timestamp) in priority_map.items():
+                f.write("{} {}\n".format(name, timestamp))
+
+    def getPriorityMap(self):
+        priority_map = {}
+        raw_map = self._readPriorityFile()
+        for key, (_, timestamp) in raw_map.items():
+            priority_map[key] = timestamp
         return priority_map
 
 #*****************************************************

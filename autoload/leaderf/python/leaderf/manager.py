@@ -1702,11 +1702,10 @@ class Manager(object):
                 new_result = []
                 for weight, line in result:
                     digest = self._getDigest(line, 0)
-                    if os.name == 'nt':
-                        digest = digest.replace('\\', '/')
+                    digest = mru.normalizeForPriority(digest)
                     prio = priority_map.get(digest, 0)
                     if prio > 0:
-                         weight += 10000
+                         weight += prio
                     new_result.append((weight, line))
                 result = new_result
 
