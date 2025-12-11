@@ -725,6 +725,9 @@ class AnyHub(object):
             elif category == "coc":
                 from .cocExpl import cocExplManager
                 manager = cocExplManager
+            elif category == "gitRepo":
+                from .gitRepoExpl import gitRepoExplManager
+                manager = gitRepoExplManager
             else:
                 import ctypes
                 manager_id = lfFunction(lfEval("g:Lf_PythonExtensions['%s'].manager_id" % category))()

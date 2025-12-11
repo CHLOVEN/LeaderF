@@ -128,6 +128,11 @@ if get(g:, 'Lf_MruEnable', 1) == 1
   augroup END
 endif
 
+augroup LeaderF_GitRepo
+    autocmd!
+    autocmd BufEnter * call lfGitRepo#record()
+augroup END
+
 augroup LeaderF_Gtags
     autocmd!
     if get(g:, 'Lf_GtagsAutoGenerate', 0) == 1
@@ -274,6 +279,7 @@ command! -bar -nargs=0 LeaderfQuickFix Leaderf quickfix
 command! -bar -nargs=0 LeaderfLocList  Leaderf loclist
 
 command! -bar -nargs=0 LeaderfGit           Leaderf git
+command! -bar -nargs=0 LeaderfGitRepo       Leaderf gitRepo
 command! -bar -nargs=0 LeaderfGitSplitDiff  Leaderf git diff --current-file --side-by-side
 command! -bar -nargs=0 LeaderfGitNavigationOpen call leaderf#Git#OpenNavigationPanel()
 command! -bar -nargs=0 LeaderfGitInlineBlameEnable Leaderf git blame --inline

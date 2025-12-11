@@ -71,6 +71,7 @@ let g:Lf_Helps = {
             \ "git-diff":       "show changes between commits, commit and working tree, etc",
             \ "git-blame":      "show what revision and author last modified each line of a file",
             \ "coc":            "execute coc's commands",
+            \ "gitRepo":        "search git repositories",
             \ }
 
 let g:Lf_Arguments = {
@@ -219,6 +220,11 @@ let g:Lf_Arguments = {
             \ "quickfix": [],
             \ "loclist": [],
             \ "jumps": [],
+            \ "gitRepo": [
+            \           {"name": ["--detect-exe"], "nargs": 1, "help": "Detect windows with this executable name."},
+            \           {"name": ["--detect-class"], "nargs": 1, "help": "Detect windows with this window class."},
+            \           {"name": ["--detect-fmt"], "nargs": 1, "help": "Format string to match window title, e.g. '{} - Antigravity'."},
+            \   ],
             \ "git":{
             \       "log": [
             \           [
