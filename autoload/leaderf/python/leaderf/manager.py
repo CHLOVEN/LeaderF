@@ -1705,7 +1705,7 @@ class Manager(object):
                     digest = mru.normalizeForPriority(digest)
                     prio = priority_map.get(digest, 0)
                     if prio > 0:
-                         weight += 10000 + prio
+                        weight += 10000000000 + prio
                     new_result.append((weight, line))
                 result = new_result
 
