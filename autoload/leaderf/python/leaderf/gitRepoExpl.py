@@ -161,7 +161,14 @@ class GitRepoExplManager(Manager):
             line = line[:-7]
         lfCmd("cd %s" % escSpecial(line))
 
-        # Open a file inside .git as requested
+        repo_path_with_sep = os.path.join(line, "")
+        oldfiles = vim.eval("v:oldfiles")
+        for f in oldfiles:
+            f = os.path.abspath(os.path.expanduser(f))
+            if f.startswith(repo_path_with_sep) and os.path.exists(f):
+                lfCmd("edit %s" % escSpecial(f))
+                return
+
         git_files = ["HEAD", "config", "description", "index"]
         for name in git_files:
             target = os.path.join(line, ".git", name)
