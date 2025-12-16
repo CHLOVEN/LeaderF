@@ -2733,8 +2733,9 @@ class Manager(object):
             self._getInstance().clearBuffer()
 
     def startExplorer(self, win_pos, *args, **kwargs):
-        vim.options['title'] = True
-        vim.options['titlestring'] = "LeaderF_mode"
+        if lfEval("has('nvim')") == '0':
+            vim.options['title'] = True
+            vim.options['titlestring'] = "LeaderF_mode"
         arguments_dict = kwargs.get("arguments", {})
         if "--recall" in arguments_dict:
             self._arguments.update(arguments_dict)
