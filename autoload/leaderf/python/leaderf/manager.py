@@ -2616,6 +2616,21 @@ class Manager(object):
         self._setAutochdir()
         self._restoreOrigCwd()
 
+    def send_to_nofile_buffer(self):
+        import time
+        current_buffer_lines = list(self._getInstance().buffer)
+        
+        self._getInstance().exitBuffer()
+        
+        lfCmd("enew")
+        lfCmd("setlocal buftype=nofile")
+        lfCmd("setlocal bufhidden=hide")
+        lfCmd("setlocal noswapfile")
+        lfCmd("setlocal nobuflisted")
+        lfCmd("file LeaderF_Result_%s" % str(time.time()).replace('.', '_'))
+        
+        vim.current.buffer[:] = current_buffer_lines
+
     def refresh(self, normal_mode=True):
         self._getExplorer().cleanup()
         content = self._getExplorer().getFreshContent()

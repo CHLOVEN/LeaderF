@@ -698,6 +698,60 @@ function! leaderf#setAmbiwidth(val) abort
 endfunction
 
 function! leaderf#highlightDevIcons() abort
-    exec g:Lf_py 'from leaderf.devicons import highlightDevIcons'
-    exec g:Lf_py 'highlightDevIcons()'
+  exec g:Lf_py 'from leaderf.devicons import highlightDevIcons'
+  exec g:Lf_py 'highlightDevIcons()'
 endfunction
+
+function! leaderf#SendToNofileBuffer(...) abort
+  if a:0 > 0
+    let manager_name = a:1
+  else
+    let bufname = bufname('%')
+    let manager_name = ''
+    
+    if bufname =~? 'LeaderF_File'
+      let manager_name = 'fileExplManager'
+    elseif bufname =~? 'LeaderF_Buffer'
+      let manager_name = 'bufExplManager'
+    elseif bufname =~? 'LeaderF_Mru'
+      let manager_name = 'mruExplManager'
+    elseif bufname =~? 'LeaderF_Tag'
+      let manager_name = 'tagExplManager'
+    elseif bufname =~? 'LeaderF_BufTag'
+      let manager_name = 'bufTagExplManager'
+    elseif bufname =~? 'LeaderF_Function'
+      let manager_name = 'functionExplManager'
+    elseif bufname =~? 'LeaderF_Line'
+      let manager_name = 'lineExplManager'
+    elseif bufname =~? 'LeaderF_Rg'
+      let manager_name = 'rgExplManager'
+    elseif bufname =~? 'LeaderF_Gtags'
+      let manager_name = 'gtagsExplManager'
+    elseif bufname =~? 'LeaderF_Self'
+      let manager_name = 'selfExplManager'
+    elseif bufname =~? 'LeaderF_Help'
+      let manager_name = 'helpExplManager'
+    elseif bufname =~? 'LeaderF_Colorscheme'
+      let manager_name = 'colorschemeExplManager'
+    elseif bufname =~? 'LeaderF_Command'
+      let manager_name = 'commandExplManager'
+    elseif bufname =~? 'LeaderF_Window'
+      let manager_name = 'windowExplManager'
+    elseif bufname =~? 'LeaderF_History'
+      let manager_name = 'historyExplManager'
+    elseif bufname =~? 'LeaderF_Git'
+      let manager_name = 'gitExplManager'
+    elseif bufname =~? 'LeaderF_GitRepo'
+      let manager_name = 'gitRepoExplManager'
+    else
+      echohl ErrorMsg
+      echo "LeaderF: Unknown buffer type"
+      echohl None
+      return
+    endif
+  endif
+  
+  exec g:Lf_py printf("%s.send_to_nofile_buffer()", manager_name)
+endfunction
+
+

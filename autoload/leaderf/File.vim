@@ -27,7 +27,7 @@ function! leaderf#File#Maps()
     nnoremap <buffer> <silent> <Tab>         :exec g:Lf_py "fileExplManager.input()"<CR>
     nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "fileExplManager.toggleHelp()"<CR>
     nnoremap <buffer> <silent> <F5>          :exec g:Lf_py "fileExplManager.refresh()"<CR>
-    nnoremap <buffer> <silent> s             :exec g:Lf_py "fileExplManager.addSelections()"<CR>
+    nnoremap <buffer> <silent> s             :call leaderf#SendToNofileBuffer('fileExplManager')<CR>
     nnoremap <buffer> <silent> a             :exec g:Lf_py "fileExplManager.selectAll()"<CR>
     nnoremap <buffer> <silent> c             :exec g:Lf_py "fileExplManager.clearSelections()"<CR>
     nnoremap <buffer> <silent> M             :exec g:Lf_py "fileExplManager.createFile()"<CR>
@@ -64,7 +64,7 @@ function! leaderf#File#NormalModeFilter(winid, key) abort
     if key ==? "<F5>"
         exec g:Lf_py "fileExplManager.refresh()"
     elseif key ==# "s"
-        exec g:Lf_py "fileExplManager.addSelections()"
+        call leaderf#SendToNofileBuffer('fileExplManager')
     elseif key ==# "a"
         exec g:Lf_py "fileExplManager.selectAll()"
     elseif key ==# "c"

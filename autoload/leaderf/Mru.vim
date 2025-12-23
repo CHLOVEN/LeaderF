@@ -27,7 +27,7 @@ function! leaderf#Mru#Maps()
     nnoremap <buffer> <silent> <Tab>         :exec g:Lf_py "mruExplManager.input()"<CR>
     nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "mruExplManager.toggleHelp()"<CR>
     nnoremap <buffer> <silent> d             :exec g:Lf_py "mruExplManager.deleteMru()"<CR>
-    nnoremap <buffer> <silent> s             :exec g:Lf_py "mruExplManager.addSelections()"<CR>
+    nnoremap <buffer> <silent> s             :call leaderf#SendToNofileBuffer('mruExplManager')<CR>
     nnoremap <buffer> <silent> a             :exec g:Lf_py "mruExplManager.selectAll()"<CR>
     nnoremap <buffer> <silent> c             :exec g:Lf_py "mruExplManager.clearSelections()"<CR>
     nnoremap <buffer> <silent> p             :exec g:Lf_py "mruExplManager._previewResult(True)"<CR>
@@ -53,7 +53,7 @@ function! leaderf#Mru#NormalModeFilter(winid, key) abort
     if key ==# "d"
         exec g:Lf_py "mruExplManager.deleteMru()"
     elseif key ==# "s"
-        exec g:Lf_py "mruExplManager.addSelections()"
+        call leaderf#SendToNofileBuffer('mruExplManager')
     elseif key ==# "a"
         exec g:Lf_py "mruExplManager.selectAll()"
     elseif key ==# "c"

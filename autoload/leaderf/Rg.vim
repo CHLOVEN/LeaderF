@@ -35,6 +35,7 @@ function! leaderf#Rg#Maps(heading)
         nnoremap <buffer> <silent> <Tab>         :exec g:Lf_py "rgExplManager.input()"<CR>
     endif
     nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "rgExplManager.toggleHelp()"<CR>
+    nnoremap <buffer> <silent> s             :call leaderf#SendToNofileBuffer('rgExplManager')<CR>
     nnoremap <buffer> <silent> d             :exec g:Lf_py "rgExplManager.deleteCurrentLine()"<CR>
     nnoremap <buffer> <silent> Q             :exec g:Lf_py "rgExplManager.outputToQflist()"<CR>
     nnoremap <buffer> <silent> L             :exec g:Lf_py "rgExplManager.outputToLoclist()"<CR>
@@ -192,6 +193,8 @@ function! leaderf#Rg#NormalModeFilter(winid, key) abort
             call leaderf#ResetPopupOptions(a:winid, 'filter', 'leaderf#PopupFilter')
             exec g:Lf_py "rgExplManager.input()"
         endif
+    elseif key ==# "s"
+        call leaderf#SendToNofileBuffer('rgExplManager')
     elseif key ==# "d"
         exec g:Lf_py "rgExplManager.deleteCurrentLine()"
     elseif key ==# "Q"
