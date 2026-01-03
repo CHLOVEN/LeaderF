@@ -77,9 +77,11 @@ function! lfMru#updatePriority(name)
   let l:priority_map = {}
   if filereadable(l:priority_cache)
     for line in readfile(l:priority_cache)
-      let parts = split(line, ' ')
-      if len(parts) >= 2
-        let l:priority_map[parts[0]] = parts[1]
+      let l:last_space = strridx(line, ' ')
+      if l:last_space != -1
+        let l:path = strpart(line, 0, l:last_space)
+        let l:timestamp = strpart(line, l:last_space + 1)
+        let l:priority_map[l:path] = l:timestamp
       endif
     endfor
   endif
